@@ -109,7 +109,7 @@ app.post("/api/stripe/webhook", express.raw({ type: "application/json" }), async
       process.env.STRIPE_WEBHOOK_SECRET
     );
   } catch (err) {
-    return res.status(400).send(`Webhook signature verification failed: ${err.message}
+    return res.status(400).send(`Webhook signature verification failed: ${err.message}`);
   }
   if (event.type === "payment_intent.succeeded") {
     const intent = event.data.object;
@@ -120,8 +120,10 @@ app.post("/api/stripe/webhook", express.raw({ type: "application/json" }), async
       if (job) {
         job.status = "paid";
         await db.write();
-      }
-} }  res.json({ received: true });
+     }
+   } 
+ }  
+ res.json({ received: true });
 });
 app.listen(PORT, () => {
   console.log(`QuikTow API listening on port ${PORT}`);
