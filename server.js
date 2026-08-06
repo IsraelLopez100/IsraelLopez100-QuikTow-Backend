@@ -44,8 +44,7 @@ app.get("/api/health", (req, res) => {
 app.post("/api/jobs", async (req, res) => {
   const { service, priceValue, pickup, customer } = req.body;
   if (!service || typeof priceValue !== "number") {
-    return res.status(400).json({ error: "service and numeric priceValue are required"
-  }
+    return res.status(400).json({ error: "service and numeric priceValue are required" });
   const job = {
     id: makeJobId(),
     service,
