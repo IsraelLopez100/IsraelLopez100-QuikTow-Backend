@@ -1,0 +1,37 @@
+  - name: Use Node 18
+    uses: actions/setup-node@v4
+    with:
+      node-version: '18'
+
+  - name: Install deps
+    run: npm install
+
+  - name: Start server in background
+    run: |
+      # start server and capture logs
+      node server.js > server.log 2>&1 &
+      echo $! > server.pid
+
+  - name: Wait for health endpoint
+    run: |
+      for i in {1..15}; do
+        if curl -sSf http://localhost:4000/api/health > health.json 2>/dev/null; then
+          echo "up"
+          break
+        fi
+        sleep 1
+      done
+      cat health.json || true
+
+  - name: Assert healthy
+    run: |
+      if ! grep -q '"ok":true' health.json; then
+        echo "Health check failed -- server log:"
+        cat server.log
+        exit 1
+      fi
+
+  - name: Kill server
+    if: always()
+    run: |
+      kill $(cat server.pid) || true
